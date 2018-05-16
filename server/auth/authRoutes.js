@@ -3,8 +3,10 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
-const User = require("../users/User");
+const JwtStrategy = require("passport-jwt").Strategy;
+const { ExtractJwt } = require("passport-jwt");
 
+const User = require("../users/User");
 const secret = "that is what I shared yesterday lol";
 
 const localStrategy = new LocalStrategy(function(username, password, done) {
@@ -13,10 +15,19 @@ const localStrategy = new LocalStrategy(function(username, password, done) {
       if (!user) {
         done(null, false);
       } else {
-        user.validatePassword(password).then(isvalid => {
-          const { _id, username } = user;
-          return done(null, { _id, username });
-        });
+        user
+          .validatePassword(password)
+          .then(isValid => {
+            if (isValid) {
+              const { _id, username } = user;
+              return done(null, { _id, username }); // this ends in req.user
+            } else {
+              return done(null, false);
+            }
+          })
+          .catch(err => {
+            return done(err);
+          });
       }
     })
     .catch(err => done(err));
@@ -31,9 +42,7 @@ router.post("/register", function(req, res) {
     .catch(err => res.status(500).json(err));
 });
 
-router.post("/login", authenticate, (req, res) => {
-  
-});
+router.post("/login", authenticate, (req, res) => {});
 
 function makeToken(user) {
   // build that token

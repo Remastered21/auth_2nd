@@ -16,4 +16,4 @@ db
 setupMiddleware(server);
 setupRoutes(server);
 
-server.listen(5500, () => console.log('\n=== API running on port 5500 ===\n'));
+server.listen(5000, () => console.log('\n=== API running on port 5500 ===\n'));
