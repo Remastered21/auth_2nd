@@ -1,93 +1,24 @@
-# Auth Lab
+# JWT Authentication Mini
 
 Topics:
 
-* Express Middleware
-* Sessions
-* Passwords
 * Authentication
+* Express Middleware
+* Mongoose Middleware
+* Hashing Passwords
+* Using JSON Web Tokens (JWTs)
 
 ## Description
 
-In the lecture, we presented three seemingly disparate concepts: middleware,
-sessions, and passwords. For this lab, your job will be to combine these
-concepts into one authentication system.
+In this project we'll implement a full authentication workflow (register/login/logout/restrict endpoint) using Node.js, Express, MongoDB and JSON Web Tokens on the server and a React Web Application for the client.
 
 ## Running the Project
 
-* Run `yarn` in the project directory to download the project's dependencies.
-* Keep `mongod` running in its own terminal. You can use either `mongod --dbpath data` with the project's "data" directory, or `mongod` to use the global "data" resource
-* Run `yarn test` to run the tests. If you'd like, you can run `yarn run watch`
-  to automatically re-reun the tests when you make modifications.
-* To test your application in your browser, or by using
-  [Postman](https://www.getpostman.com/), make sure you've installed `nodemon`
-  via `yarn global add nodemon` and then run `nodemon src/app.js`. `nodemon` will
-  keep the server running and automatically restart it if you change anything.
-  You can now make requests to `http://localhost:3000` in your browser or
-  Postman!
-* Make modifications to `src/user.js` and `src/server.js` to make the tests pass.
-* If you'd like, feel free to reference the tests in `tests/server.test.js` as
-  you're developing.
-* Once all tests have passed, you're done! Send us a pull request.
+* Run `yarn install` to download the dependencies.
+* Ensure that you have an instance of `mongod` running in another terminal.
 
 ## Instructions
 
-### `src/user.js`
-
-First, write the schema for the user model in `src/user.js`. Each user has two
-properties: `username`, a String, and `passwordHash`, also a String. Both
-properties are required, and the username should be unique (use the option
-`unique: true`). This prevents two users from having the same username.
-
-### `src/server.js`
-
-Now start editing `src/server.js`. Note that we've provided you a helper
-function `sendUserError()` that can send down either an object error or a string
-error. You'll use this liberally in your routes.
-
-We've also gone ahead and initialized the express-session middleware so you can
-use the client-specific, persistent `req.session` object in your route handlers.
-
-### `POST /users`
-
-The `POST /users` route expects two parameters: `username` and `password`. When
-the client makes a `POST` request to `/users`, hash the given password and
-create a new user in MongoDB. Send the user object as a JSON response.
-
-Make sure to do proper validation and error checking. If there's any error,
-respond with an appropriate status and error message using the `sendUserError()`
-helper function.
-
-### `POST /log-in`
-
-The `POST /log-in` route expects two parameters: `username` and `password`. When
-the client makes a `POST` request to `/log-in`, check the given credentials and
-log in the appropriate user. Send the object `{ success: true }` as a JSON
-response if everything works out.
-
-You'll need to use a session to track who is logged in. Do **NOT** store the
-entire user object in the session; if the user in MongoDB gets updated or
-deleted, the session will not reflect the changes. Instead, store some
-information that will let you uniquely identify which user is logged in.
-
-Make sure to do proper validation and error checking. If there's any error, or
-if the credentials are invalid, respond with an appropriate status and error
-message using the `sendUserError()` helper function.
-
-### `GET /me`
-
-The `GET /me` route **should only be accessible by logged in users**. We've
-already implemented the route handler for you; your job is to add local
-middleware to ensure that only logged in users have access.
-
-Make sure to do proper validation and error checking. If there's any error, or
-if no user is logged in, respond with an appropriate status and error message
-using the `sendUserError()` helper function.
-
-## Stretch Problem
-
-If you'd like to go a step further, write a piece of **global** middleware that
-ensures a user is logged in when accessing _any_ route prefixed by
-`/restricted/`. For instance, `/restricted/something`, `/restricted/other`, and
-`/restricted/a` should all be protected by the middleware; only logged in users
-should be able to access these routes.
+* Implement authentication workflow using JSON Web Tokens.
+* Implement GET to `/api/users` that should return a list of users only if the user is logged in.
+* Implement a React client to test your API.
