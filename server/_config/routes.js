@@ -1,10 +1,10 @@
-const jwt = require("jsonwebtoken");
-const passport = require("passport");
-const LocalStrategy = require("passport-local");
-
 // routes
 const userRoutes = require("../users/userRoutes");
 const authRoutes = require("../auth/authRoutes");
+
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 const JwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
@@ -37,15 +37,16 @@ const localStrategy = new LocalStrategy(function(username, password, done) {
 });
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // grab from header called Authorization
   secretOrKey: secret
 };
 
 const jwtStrategy = new JwtStrategy(jwtOptions, function(payload, done) {
+  // here the token was decoded successfully
   User.findById(payload.sub)
     .then(user => {
       if (user) {
-        done(null, user);
+        done(null, user); // this is req.user
       } else {
         done(null, false);
       }
@@ -72,9 +73,10 @@ function makeToken(user) {
     iat: timestamp,
     username: user.username
   };
-  const option = {
+  const options = {
     expiresIn: "24h"
   };
+
   return jwt.sign(payload, secret, options);
 }
 
@@ -82,7 +84,6 @@ module.exports = function(server) {
   server.get("/", function(req, res) {
     res.send({ api: "up and running" });
   });
-
 
   // bypass to see the database regarless of log-in (test)
   server.get("/usersBypass", (req, res) => {
