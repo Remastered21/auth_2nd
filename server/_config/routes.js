@@ -3,8 +3,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
 // routes
-const userRoutes = require('../users/userRoutes');
-const authRoutes = require('../auth/authRoutes');
+const userRoutes = require("../users/userRoutes");
+const authRoutes = require("../auth/authRoutes");
 
 const JwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
@@ -79,11 +79,23 @@ function makeToken(user) {
 }
 
 module.exports = function(server) {
-  server.get('/', function(req, res) {
-    res.send({ api: 'up and running' });
+  server.get("/", function(req, res) {
+    res.send({ api: "up and running" });
   });
 
-  server.post('/register', function(req, res) {
+
+  // bypass to see the database regarless of log-in (test)
+  server.get("/usersBypass", (req, res) => {
+    User.find()
+      .then(users => {
+        res.json(users);
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  });
+
+  server.post("/register", function(req, res) {
     User.create(req.body) // new User + user.save
       .then(user => {
         const token = makeToken(user);
@@ -92,14 +104,14 @@ module.exports = function(server) {
       .catch(err => res.status(500).json(err));
   });
 
-  server.post('/login', authenticate, (req, res) => {
+  server.post("/login", authenticate, (req, res) => {
     // if we're here the user logged in correctly
     res.status(200).json({ token: makeToken(req.user), user: req.user });
   });
 
-  server.get('/users', protected, (req, res) => {
+  server.get("/users", protected, (req, res) => {
     User.find()
-      .select('username')
+      .select("username")
       .then(users => {
         res.json(users);
       })
@@ -108,4 +120,3 @@ module.exports = function(server) {
       });
   });
 };
-
