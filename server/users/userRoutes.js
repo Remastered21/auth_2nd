@@ -1,10 +1,11 @@
-const router = require('express').Router();
+const router = require("express").Router();
+const passport = require("passport");
 
-const User = require('./User');
+const User = require("./User");
 
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   User.find()
-    .select('-password')
+    .select("-password")
     .then(users => {
       res.json(users);
     })
