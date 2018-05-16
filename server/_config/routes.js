@@ -37,7 +37,7 @@ const localStrategy = new LocalStrategy(function(username, password, done) {
 });
 
 const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // grab from header called Authorization
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // grab from header called Authorization; always execute it as a function.
   secretOrKey: secret
 };
 
@@ -80,6 +80,7 @@ function makeToken(user) {
   return jwt.sign(payload, secret, options);
 }
 
+// routes
 module.exports = function(server) {
   server.get("/", function(req, res) {
     res.send({ api: "up and running" });
@@ -105,11 +106,16 @@ module.exports = function(server) {
       .catch(err => res.status(500).json(err));
   });
 
+  // login process requires you to input correct username and password.
+  // it will return "unauthorized" if both of them aren't correct.
+  // log-in to check the token belonging to the username.
   server.post("/login", authenticate, (req, res) => {
     // if we're here the user logged in correctly
     res.status(200).json({ token: makeToken(req.user), user: req.user });
   });
 
+  // protected by token-authentication
+  // requiures authorization header with 'Bearer' & 'token'
   server.get("/users", protected, (req, res) => {
     User.find()
       .select("username")
